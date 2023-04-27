@@ -8,3 +8,6 @@
 Pug - Super rare
 shiba - rare
 St. Bernard - common
+
+5. Users have to pay to mint an NFT
+6. The owner of the contract can then withdraw the ETH
