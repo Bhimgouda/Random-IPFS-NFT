@@ -12,11 +12,11 @@ error RandomIpfsNft__TransferFailed();
 
 contract RandomIpfsNft is VRFConsumerBaseV2, ERC721{
 
-    // Type Declarations
-    enum Breed {
-        PUG,
-        SHIBA_INU,
-        ST_BERNARD
+    // Collectible Declarations
+    enum Collectible {
+        NYAN_CAT,
+        CRYPTO_QUEEN,
+        BORED_APE
     }
 
     // Chainlink VRF Variables
@@ -33,21 +33,21 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721{
 
     // NFT variables
     uint256 public s_tokenCounter;
-    string[] internal s_dogTokenUris;
-    mapping (uint256 => uint256) public s_tokenIdToBreed;
+    string[] internal s_tokenUris;
+    mapping (uint256 => uint256) public s_tokenIdToCollectible;
     uint256 internal i_mintFee;
     address i_owner; 
 
     // Events 
     event NftRequested(uint256 indexed requestId, address requester);
-    event NftMinted(Breed dogBreed, address minter);
+    event NftMinted(Collectible Collectible, address minter);
  
-    constructor(address vrfCoordinatorV2, uint64 subscriptionId, bytes32 gasLane, uint32 callbackGasLimit, string[3] memory dogTokenUris, uint256 mintFee) VRFConsumerBaseV2(vrfCoordinatorV2) ERC721("RandomIPFSNFT", "RIN") {
+    constructor(address vrfCoordinatorV2, uint64 subscriptionId, bytes32 gasLane, uint32 callbackGasLimit, string[3] memory tokenUris, uint256 mintFee) VRFConsumerBaseV2(vrfCoordinatorV2) ERC721("RandomIPFSNFT", "RIN") {
         i_vrfCoordinator = VRFCoordinatorV2Interface(vrfCoordinatorV2);
         i_subscriptionId = subscriptionId;
         i_gasLane = gasLane;
         i_callbackGasLimit = callbackGasLimit;
-        s_dogTokenUris = dogTokenUris;
+        s_tokenUris = tokenUris;
         i_mintFee = mintFee;
         i_owner = msg.sender;
     }
@@ -74,36 +74,36 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721{
     }
 
     function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override{
-        address dogOwner = s_requestIdToSender[requestId];
+        address collectibleOwner = s_requestIdToSender[requestId];
         uint256 newTokenId = s_tokenCounter;
 
         // Getting the random value
         uint256 randValue = randomWords[0] % 100;
 
-        _safeMint(dogOwner, newTokenId);
+        _safeMint(collectibleOwner, newTokenId);
 
-        Breed dogBreed = getBreedFromRandValue(randValue);
+        Collectible collectible = getCollectibleFromRandValue(randValue);
 
-        // Typecasting dogBreed enum to get its index
-        s_tokenIdToBreed[newTokenId] = uint256(dogBreed);
+        // Collectiblecasting collectible enum to get its index
+        s_tokenIdToCollectible[newTokenId] = uint256(collectible);
 
-        emit NftMinted(dogBreed, dogOwner);
+        emit NftMinted(collectible, collectibleOwner);
     }
 
-    function getBreedFromRandValue(uint256 randValue) public pure returns (Breed) {
+    function getCollectibleFromRandValue(uint256 randValue) public pure returns (Collectible) {
         if(!(randValue >= 0 && randValue < 100)) revert RandomIpfsNft__RangeOutOfBounds();
         if(randValue <= 10){
-            return Breed(0);
+            return Collectible(0);
         }
         else if(randValue <= 40){
-            return Breed(1);
+            return Collectible(1);
         }
-        return Breed(2);
+        return Collectible(2);
     }
 
     function tokenURI(uint256 tokenId) public override view returns(string memory){
-        uint256 dogBreed = s_tokenIdToBreed[tokenId];
-        return s_dogTokenUris[dogBreed];
+        uint256 collectible = s_tokenIdToCollectible[tokenId];
+        return s_tokenUris[collectible];
     }
 
     function withdraw() public onlyOwner {
@@ -116,8 +116,8 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721{
         return i_mintFee;
     }
 
-    function getDogTokenUris(uint256 index) public view returns (string memory) {
-        return s_dogTokenUris[index];
+    function getTokenUris(uint256 index) public view returns (string memory) {
+        return s_tokenUris[index];
     }
 
     function getTokenCounter() public view returns(uint256){
