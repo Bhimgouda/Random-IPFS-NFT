@@ -58,7 +58,7 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721{
     }
 
     function requestNft() public payable returns(uint256 requestId) {
-        if(msg.value >= i_mintFee) revert RandomIpfsNft__NeedMoreEthSent();
+        if(msg.value < i_mintFee) revert RandomIpfsNft__NeedMoreEthSent();
 
         requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane,
@@ -79,7 +79,7 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721{
 
         // Getting the random value
         uint256 randValue = randomWords[0] % 100;
-
+        s_tokenCounter++ ;
         _safeMint(collectibleOwner, newTokenId);
 
         Collectible collectible = getCollectibleFromRandValue(randValue);

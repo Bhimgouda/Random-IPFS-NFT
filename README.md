@@ -11,3 +11,5 @@ St. Bernard - common
 
 5. Users have to pay to mint an NFT
 6. The owner of the contract can then withdraw the ETH
+
+Contract Address - 0xd233a1482998C0e3Db10a882B0d404422eBA80c9

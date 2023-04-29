@@ -1,6 +1,9 @@
-require("@nomicfoundation/hardhat-toolbox")
-// require("./tasks")
+require("@nomiclabs/hardhat-waffle")
+require("hardhat-gas-reporter")
+require("@nomiclabs/hardhat-etherscan")
 require("dotenv").config()
+require("solidity-coverage")
+require("hardhat-deploy")
 
 // RPC URLs
 const MAINNET_RPC_URL =
